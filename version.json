@@ -1,0 +1,31 @@
+---
+
+## 4. Python から Private Repo の JSON を取得する方法
+非公開なので **GitHub Personal Access Token** が必要です。
+
+1. [Settings → Developer settings → Tokens](https://github.com/settings/tokens)  
+2. `classic token` または `fine-grained token` を発行  
+   - scope: `repo` 権限を付与  
+3. Pythonコードを以下のように修正👇
+
+```python
+GITHUB_TOKEN = "ghp_xxxxxxxxxxxxxxxxx"
+UPDATE_URL = "https://api.github.com/repos/<ユーザー名>/<リポジトリ名>/contents/version.json"
+
+def check_update():
+    try:
+        headers = {"Authorization": f"token {GITHUB_TOKEN}"}
+        res = requests.get(UPDATE_URL, headers=headers, timeout=5)
+        if res.status_code == 200:
+            content = res.json()["content"]
+            import base64
+            data = json.loads(base64.b64decode(content))
+            latest = data.get("latest")
+            changelog = data.get("changelog", "")
+            if latest and latest != CURRENT_VERSION:
+                msg = f"新しいバージョン {latest} が利用可能です！\n\n変更内容:\n{changelog}"
+                messagebox.showinfo("アップデート通知", msg)
+        else:
+            log_error(f"[Update Error] ステータスコード {res.status_code}")
+    except Exception as e:
+        log_error(f"[Update Error] {e}")
