@@ -1,0 +1,12 @@
+# 環境変数ファイル
+.env
+
+# ログ
+logs/
+
+# 設定ファイル（ユーザー固有のため）
+config/config.json
+
+# Python キャッシュ
+__pycache__/
+*.pyc
